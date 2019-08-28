@@ -11,6 +11,7 @@ const {
 } = electron;
 const fs = require('fs');
 const csv_parse = require('csv-parse');
+const sqlite3 = require('sqlite3').verbose();;
 
 /*ipcMain.on('asynchronous-message', (event, arg) => {
     /*if(arg === 'ping')
@@ -46,6 +47,23 @@ function createWindow () {
   // and load the index.html of the app.
   win.webContents.openDevTools();
   win.loadFile('index.html');
+
+
+  ipcMain.on('dbTest', function(event, args) {
+    let db = new sqlite3.Database('./Database/sim_db.sqlite');
+
+    db.serialize(function() {
+
+      db.each("SELECT * FROM Example", function(err, row) {
+        if(err) {
+          console.log(err);
+          return;
+        }
+        console.log(row);
+      });
+
+    });
+  });
 
   //Fenster für Datei Öffnen
   ipcMain.on('openFile', function(event, args) {

@@ -4,6 +4,7 @@
   "description": "Sim Karten übersicht",
   "main": "main.js",
   "scripts": {
+    "postinstall": "install-app-deps",
     "start": "electron ."
   },
   "keywords": [
@@ -14,9 +15,11 @@
   "author": "Ermal Durmishi",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^6.0.4"
+    "electron": "^6.0.4",
+    "electron-builder": "^21.2.0"
   },
   "dependencies": {
-    "csv-parse": "^4.4.5"
+    "csv-parse": "^4.4.5",
+    "sqlite3": "^4.1.0"
   }
 }
