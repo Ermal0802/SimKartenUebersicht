@@ -1,0 +1,22 @@
+{
+  "name": "sim",
+  "version": "1.0.0",
+  "description": "Sim Karten übersicht",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "Sim",
+    "Karten",
+    "übersicht"
+  ],
+  "author": "Ermal Durmishi",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^6.0.4"
+  },
+  "dependencies": {
+    "csv-parse": "^4.4.5"
+  }
+}
