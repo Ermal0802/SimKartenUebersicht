@@ -1,17 +1,41 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Sim Karten übesicht </title>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script type="./main.js"></script>
-  </head>
-  <body>
-    <h1>Sim Karten Übersicht &#128190;</h1>
-    <button id="btn" type="button">Click</button>
-    <button id="btn2" type="button">DB TEST</button>
+<head>
+  <meta charset="UTF-8">
+  <title>Sim Karten übesicht </title>
 
-    <table border="6">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@3.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+</head>
+<body>
+
+  <div id="app">
+    <v-app-bar app>
+      <v-toolbar-title>Beispiel</v-toolbar-title>
+      <v-divider vertical class="mx-4"></v-divider>
+      <v-btn text>Click</v-btn>
+      <v-btn text>DB TEST</v-btn>
+    </v-app-bar>
+
+
+    <v-simple-table>
+      <thead>
+        <tr>
+          <th class="text-left">Custom 1</th>
+          <th class="text-left">IP</th>
+          <th class="text-left">ISDN</th>
+          <th class="text-left">Total</th>
+        </tr>
+      </thead>
+      <tbody id="testText">
+      </tbody>
+    </v-simple-table>
+
+    <!-- <table border="6">
       <thead>
         <tr>
           <th>Custom 1</th>
@@ -24,11 +48,12 @@
       </tbody>
     </table>
     <p>Hier ist die Sim Karten Übersicht.</p>
-    <!--Tabelle -->
-
-
-    <script type="text/javascript">
-      const index = require('./index.js');
-    </script>
-  </body>
+    <!Tabelle -->
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script type="text/javascript">
+    const index = require('./index.js');
+  </script>
+</body>
 </html>

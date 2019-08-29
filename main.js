@@ -34,13 +34,13 @@ const sqlite3 = require('sqlite3').verbose();;
 })*/
 
 
-function createWindow () {
+function createWindow() {
   // Erstelle das Browser-Fenster.
   let win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-    nodeIntegration: true
+      nodeIntegration: true
     }
   });
 
@@ -55,7 +55,7 @@ function createWindow () {
     db.serialize(function() {
 
       db.each("SELECT * FROM Example", function(err, row) {
-        if(err) {
+        if (err) {
           console.log(err);
           return;
         }
@@ -74,7 +74,7 @@ function createWindow () {
 
     if (files != undefined) {
       if (files.length > 0) {
-        fs.readFile(files[0],function(err, buf) {
+        fs.readFile(files[0], function(err, buf) {
           if (err) {
             console.log(err);
             return;
@@ -83,54 +83,54 @@ function createWindow () {
           var output = [];
 
           csv_parse(buf.toString(), {
-            trim: true,
-            skip_empty_lines: true,
-            delimiter: ";"
-          })
-          .on('readable', function(){
+              trim: true,
+              skip_empty_lines: true,
+              delimiter: ";"
+            })
+            .on('readable', function() {
 
-            let spalten = null;
-            let zeile;
-            while(zeile = this.read()){
-              if(!spalten) {
-                spalten = zeile;
-              } else {
-                output.push(zeile);
+              let spalten = null;
+              let zeile;
+              while (zeile = this.read()) {
+                if (!spalten) {
+                  spalten = zeile;
+                } else {
+                  output.push(zeile);
+                }
               }
-            }
 
-            var liste = [];
-            // 'of' Werte von der liste
-            // 'in' position von der Liste
-            for (var i of output) {
-            	//Erstellt für jede zahl ein Objekt.
-            	var o = {};
-                for(var k in spalten) {
-                	o[spalten[k]] = i[k];
+              var liste = [];
+              // 'of' Werte von der liste
+              // 'in' position von der Liste
+              for (var i of output) {
+                //Erstellt für jede zahl ein Objekt.
+                var o = {};
+                for (var k in spalten) {
+                  o[spalten[k]] = i[k];
                 }
                 liste.push(o);
-            }
-
-            var gruppen = {};
-
-            for (var obj of liste) {
-              if (obj["CUSTOM1"] in gruppen) {
-                gruppen[obj["CUSTOM1"]]["total"] += parseInt(obj["TOTAL_AMOUNT"]);
-              }else {
-                gruppen[obj["CUSTOM1"]] = {
-                  custom: obj["CUSTOM1"],
-                  isdn: obj["MSISDN"],
-                  ip: obj["CALLING_IP"],
-                  total: parseInt(obj["TOTAL_AMOUNT"])
-                };
               }
-            }
 
-            win.webContents.send("openFile", {
-              fileName: files[0],
-              content: Object.values(gruppen)
+              var gruppen = {};
+
+              for (var obj of liste) {
+                if (obj["CUSTOM1"] in gruppen) {
+                  gruppen[obj["CUSTOM1"]]["total"] += parseInt(obj["TOTAL_AMOUNT"]);
+                } else {
+                  gruppen[obj["CUSTOM1"]] = {
+                    custom: obj["CUSTOM1"],
+                    isdn: obj["MSISDN"],
+                    ip: obj["CALLING_IP"],
+                    total: parseInt(obj["TOTAL_AMOUNT"])
+                  };
+                }
+              }
+              console.log(gruppen);
+              win.webContents.send("openFile", {
+                fileName: files[0],
+                content: Object.values(gruppen)
+              });
             });
-          });
         });
       }
     }
