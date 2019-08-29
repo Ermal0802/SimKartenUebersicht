@@ -21,22 +21,13 @@
     <v-app>
       <v-content>
         <v-app-bar app>
-
-          <v-toolbar-title>Beispiel</v-toolbar-title>
-
+          <v-toolbar-title>Simkarten Übersicht</v-toolbar-title>
           <v-divider class="mx-4" vertical></v-divider>
-
-          <v-btn @click="openFile" text>Click</v-btn>
-
-          <v-btn text>DB TEST</v-btn>
-
+          <v-btn @click="openFile" text>Daten importieren</v-btn>
         </v-app-bar>
 
 
-        <v-data-table
-        :headers="header"
-        :items="zeilen"
-        ></v-data-table>
+        <v-data-table :headers="header" :items="zeilen"></v-data-table>
 
       </v-content>
     </v-app>

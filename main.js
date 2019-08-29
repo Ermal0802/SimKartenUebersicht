@@ -11,28 +11,7 @@ const {
 } = electron;
 const fs = require('fs');
 const csv_parse = require('csv-parse');
-const sqlite3 = require('sqlite3').verbose();;
-
-/*ipcMain.on('asynchronous-message', (event, arg) => {
-    /*if(arg === 'ping')
-        event.sender.send('asynchronous-reply', 'pong');
-    else
-        event.sender.send('asynchronous-reply', 'unrecognized arg');
-
-    if(arg.action == 'openFile') {
-      fs.readFile('./textdatei.txt', function(err, data) {
-        if(err) {
-          console.log(err)
-          return;
-        }
-        event.sender.send('asynchronous-reply',{
-          action: 'fileContent',
-          content: data
-        })
-      })
-    }
-})*/
-
+const sqlite3 = require('sqlite3').verbose();
 
 function createWindow() {
   // Erstelle das Browser-Fenster.
@@ -137,22 +116,4 @@ function createWindow() {
 
   });
 }
-
-/*
-var content;
-// First I want to read the file
-fs.readFile('./textdatei.txt', function read(err, data) {
-    if (err) {
-        throw err;
-    }
-    content = data;
-
-    // Invoke the next step here however you like
-    console.log(content);   // Put all of the code here (not the best solution)
-    processFile();          // Or put the next step in a function and invoke it
-});
-*/
-
-
-
 app.on('ready', createWindow);

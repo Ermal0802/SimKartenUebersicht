@@ -1,5 +1,3 @@
-// Webseite
-
 const electron = require('electron');
 const {
   remote,
@@ -15,7 +13,7 @@ var App = new Vue({
   }),
   data: {
     header: [{
-      text: "Custom",
+      text: "Customer",
       value: "custom"
     }, {
       text: "IP",
@@ -42,15 +40,3 @@ var App = new Vue({
 
   }
 });
-
-/*
-function btn2_click() {
-  ipcRenderer.send('dbTest', {});
-}
-
-function btn_Click() {
-
-  ipcRenderer.send('openFile', {});
-}
-document.getElementById('btn').addEventListener('click', btn_Click);
-document.getElementById('btn2').addEventListener('click', btn2_click);*/
