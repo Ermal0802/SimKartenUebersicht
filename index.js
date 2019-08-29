@@ -17,7 +17,6 @@ new Vue({
 
 ipcRenderer.on('openFile', function(event, args) {
 
-
   var tab = document.getElementById("testText");
   tab.innerHTML = "";
   for (var z of args.content) {
