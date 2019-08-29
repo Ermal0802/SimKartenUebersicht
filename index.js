@@ -6,38 +6,44 @@ const {
   ipcRenderer
 } = electron;
 
-new Vue({
+var App = new Vue({
   el: "#app",
   vuetify: new Vuetify({
     theme: {
       dark: true
     }
-  })
-});
+  }),
+  data: {
+    header: [{
+      text: "Custom",
+      value: "custom"
+    }, {
+      text: "IP",
+      value: "ip"
+    }, {
+      text: "Tel",
+      value: "isdn"
+    }, {
+      text: "Total",
+      value: "total"
+    }],
+    zeilen: []
+  },
+  methods: {
+    openFile: function() {
+      ipcRenderer.send('openFile', {});
+    }
+  },
+  created: function() {
 
-ipcRenderer.on('openFile', function(event, args) {
+    ipcRenderer.on('openFile', function(event, args) {
+      this.zeilen = args.content;
+    }.bind(this));
 
-  var tab = document.getElementById("testText");
-  tab.innerHTML = "";
-  for (var z of args.content) {
-    var tr = document.createElement("tr");
-    var td1 = document.createElement("td");
-    td1.innerText = z.custom;
-    tr.appendChild(td1);
-    var td2 = document.createElement("td");
-    td2.innerText = z.ip;
-    tr.appendChild(td2);
-    var td3 = document.createElement("td");
-    td3.innerText = z.isdn;
-    tr.appendChild(td3);
-    var td4 = document.createElement("td");
-    td4.innerText = z.total;
-    tr.appendChild(td4);
-    tab.appendChild(tr);
   }
-
 });
 
+/*
 function btn2_click() {
   ipcRenderer.send('dbTest', {});
 }
@@ -47,4 +53,4 @@ function btn_Click() {
   ipcRenderer.send('openFile', {});
 }
 document.getElementById('btn').addEventListener('click', btn_Click);
-document.getElementById('btn2').addEventListener('click', btn2_click);
+document.getElementById('btn2').addEventListener('click', btn2_click);*/

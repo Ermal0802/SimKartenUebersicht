@@ -1,54 +1,45 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>Sim Karten übesicht </title>
 
+
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@3.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
+  <link rel="stylesheet" href="./style.css">
+
 </head>
+
 <body>
 
   <div id="app">
-    <v-app-bar app>
-      <v-toolbar-title>Beispiel</v-toolbar-title>
-      <v-divider vertical class="mx-4"></v-divider>
-      <v-btn text>Click</v-btn>
-      <v-btn text>DB TEST</v-btn>
-    </v-app-bar>
+    <v-app>
+      <v-content>
+        <v-app-bar app>
+
+          <v-toolbar-title>Beispiel</v-toolbar-title>
+
+          <v-divider class="mx-4" vertical></v-divider>
+
+          <v-btn @click="openFile" text>Click</v-btn>
+
+          <v-btn text>DB TEST</v-btn>
+
+        </v-app-bar>
 
 
-    <v-simple-table>
-      <thead>
-        <tr>
-          <th class="text-left">Custom 1</th>
-          <th class="text-left">IP</th>
-          <th class="text-left">ISDN</th>
-          <th class="text-left">Total</th>
-        </tr>
-      </thead>
-      <tbody id="testText">
-      </tbody>
-    </v-simple-table>
+        <v-data-table
+        :headers="header"
+        :items="zeilen"
+        ></v-data-table>
 
-    <!-- <table border="6">
-      <thead>
-        <tr>
-          <th>Custom 1</th>
-          <th>IP</th>
-          <th>ISDN</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="testText">
-      </tbody>
-    </table>
-    <p>Hier ist die Sim Karten Übersicht.</p>
-    <!Tabelle -->
+      </v-content>
+    </v-app>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -56,4 +47,5 @@
     const index = require('./index.js');
   </script>
 </body>
+
 </html>
