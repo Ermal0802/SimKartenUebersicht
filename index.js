@@ -30,13 +30,18 @@ var App = new Vue({
   methods: {
     openFile: function() {
       ipcRenderer.send('openFile', {});
+    },
+    dbTest: function() {
+      ipcRenderer.send('dbTest', {});
     }
   },
   created: function() {
 
     ipcRenderer.on('openFile', function(event, args) {
       this.zeilen = args.content;
+      console.log(zeilen);
     }.bind(this));
+
 
   }
 });
