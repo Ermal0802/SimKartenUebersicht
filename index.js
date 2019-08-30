@@ -39,7 +39,7 @@ var App = new Vue({
 
     ipcRenderer.on('openFile', function(event, args) {
       this.zeilen = args.content;
-      console.log(zeilen);
+      //console.log(zeilen);
     }.bind(this));
 
 

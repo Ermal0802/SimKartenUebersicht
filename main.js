@@ -28,12 +28,16 @@ function createWindow() {
   win.loadFile('index.html');
 
 
+
   ipcMain.on('dbTest', function(event, args) {
+
     let db = new sqlite3.Database('./Database/sim_db.sqlite');
 
     db.serialize(function() {
 
-      db.each("SELECT * FROM Example", function(err, row) {
+      db.run("UPDATE Customs SET Name = ? WHERE IP = ?",[gruppen[custom],gruppen[ip]]);
+
+      db.each("SELECT * FROM Customs", function(err, row) {
         if (err) {
           console.log(err);
           return;
