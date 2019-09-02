@@ -24,7 +24,17 @@ var App = new Vue({
     }, {
       text: "Total",
       value: "total"
-    }],
+    }, {
+      text: "Datum",
+      value: "display"
+    } , {
+      text: "Start",
+      value: "start"
+    } , {
+      text: "Ende",
+      value: "ende"
+    }
+  ],
     zeilen: []
   },
   methods: {
