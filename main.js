@@ -13,13 +13,14 @@ const fs = require('fs');
 const csv_parse = require('csv-parse');
 const sqlite3 = require('sqlite3').verbose();
 
+
 function dateDE(str) {
 
   var tag = str.substr(0, 2);
- 	var monate = str.substr(3, 2);
+  var monate = str.substr(3, 2);
   var jahre = str.substr(6, 4);
 
-  var d = new Date(jahre+ "-" + monate + "-" +tag );
+  var d = new Date(jahre + "-" + monate + "-" + tag);
 
 
   return d;
@@ -99,7 +100,78 @@ function createWindow() {
           );
         });*/
   });
+  ipcMain.on('Reload', function(event, args) {
+    console.log('test1');
+    let db = new sqlite3.Database('./Database/sim_db.sqlite');
+    db.serialize(function() {
+      console.log("test2");
+      db.all(
+        "SELECT ID, Name, IP, Tel FROM Customs",
+        [],
+        function(err, customersRows) {
+          if (err) {
+            console.log(err);
+            return;
+          }
 
+          let header = {};
+
+          for (let k in customersRows[0]) {
+            header[k] = {
+              text: k,
+              value: k
+            };
+          }
+
+          header['Spark'] = {
+            text: 'Spark',
+            value: 'spark'
+          };
+
+          let customers = {};
+
+          for(let cust of customersRows) {
+            customers[cust.ID] = cust;
+            customers[cust.ID]['spark'] = [];
+          }
+
+          db.all(
+            "SELECT CID, Datum, Werte FROM Monate ORDER BY Start",
+            [],
+            function(err, monate) {
+              if (err) {
+                console.log(err);
+                return;
+              }
+
+              for(let monat of monate) {
+                if(!(monat.Datum in header)) {
+                  header[monat.Datum] = {
+                    text: monat.Datum,
+                    value: monat.Datum
+                  };
+                }
+                if(monat.CID in customers) {
+                  customers[monat.CID][monat.Datum] = monat.Werte;
+                  customers[monat.CID]['spark'].push(monat.Werte);
+                }
+              }
+
+              console.log(customers);
+
+              win.webContents.send("newData", {
+                header: Object.values(header),
+                content: Object.values(customers)
+              });
+
+            });
+        }
+      );
+
+    });
+
+
+  });
   //Fenster für Datei Öffnen
   ipcMain.on('openFile', function(event, args) {
 
@@ -139,7 +211,7 @@ function createWindow() {
               // 'in' position von der Liste
               for (var i of output) {
                 //Erstellt für jede zahl ein Objekt.
-                var o = {};
+                var o = [];
                 for (var k in spalten) {
                   o[spalten[k]] = i[k];
                 }
@@ -151,11 +223,11 @@ function createWindow() {
               for (let obj of liste) {
                 if (obj["CUSTOM1"] in gruppen) {
                   gruppen[obj["CUSTOM1"]].total += parseInt(obj["TOTAL_AMOUNT"]);
-                  if(gruppen[obj["CUSTOM1"]].start > dateDE(obj["USAGE_RECORD_START_TIMESTAMP"])) {
+                  if (gruppen[obj["CUSTOM1"]].start > dateDE(obj["USAGE_RECORD_START_TIMESTAMP"])) {
                     gruppen[obj["CUSTOM1"]].start = dateDE(obj["USAGE_RECORD_START_TIMESTAMP"]);
                     gruppen[obj["CUSTOM1"]].display = dateName(gruppen[obj["CUSTOM1"]].start);
                   }
-                  if(gruppen[obj["CUSTOM1"]].ende < dateDE(obj["USAGE_RECORD_END_TIMESTAMP"])) {
+                  if (gruppen[obj["CUSTOM1"]].ende < dateDE(obj["USAGE_RECORD_END_TIMESTAMP"])) {
                     gruppen[obj["CUSTOM1"]].ende = dateDE(obj["USAGE_RECORD_END_TIMESTAMP"]);
                   }
                 } else {
@@ -171,6 +243,9 @@ function createWindow() {
                 }
               }
 
+              let ObjectCount = Object.keys(gruppen).length;
+              let WorkedObjects = 0;
+              let FailedObjects = 0;
 
 
               let db = new sqlite3.Database('./Database/sim_db.sqlite');
@@ -183,6 +258,7 @@ function createWindow() {
                     function(cname, err, row) {
                       if (err) {
                         console.log(err);
+                        FailedObjects += 1;
                         return;
                       }
 
@@ -198,6 +274,7 @@ function createWindow() {
                         function(err) {
                           if (err) {
                             console.log(err);
+                            FailedObjects += 1;
                             return;
                           }
 
@@ -205,13 +282,13 @@ function createWindow() {
                             CID = this.lastID;
                           }
 
-                          console.log(CID);
-                          console.log(gruppen[cname]["display"]);
-                          console.log(gruppen[cname]["total"]);
-                          console.log(gruppen[cname]["start"]);
-                          console.log(gruppen[cname]["ende"]);
+                          //console.log(CID);
+                          //console.log(gruppen[cname]["display"]);
+                          //console.log(gruppen[cname]["total"]);
+                          //console.log(gruppen[cname]["start"]);
+                          //console.log(gruppen[cname]["ende"]);
 
-                          //////////////////////////////
+                          //8//8//8//8//8//8//8//8//8//8//8//8//8//8//
                           db.run(
                             "INSERT OR IGNORE INTO Monate(CID,Datum,Werte,Start,Ende) VALUES(?,?,?,?,?);",
                             [
@@ -224,6 +301,14 @@ function createWindow() {
                             function(err) {
                               if (err) {
                                 console.log(err);
+                                FailedObjects += 1;
+                                return;
+                              }
+
+                              WorkedObjects += 1;
+
+                              if ((FailedObjects + WorkedObjects) == ObjectCount) {
+                                win.webContents.send("openFile", {});
                               }
                             }
                           );
@@ -232,16 +317,10 @@ function createWindow() {
                   );
                 }
               });
-
-              console.log(gruppen);
-              win.webContents.send("openFile", {
-                content: Object.values(gruppen)
-              });
             });
         });
       }
     }
-
   });
 }
 app.on('ready', createWindow);

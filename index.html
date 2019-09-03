@@ -24,11 +24,20 @@
           <v-toolbar-title>Simkarten Übersicht</v-toolbar-title>
           <v-divider class="mx-4" vertical></v-divider>
           <v-btn @click="openFile" text>Daten importieren</v-btn>
-          <v-btn @click="dbTest" text>dbTest</v-btn>
+          <v-btn @click="Reload" text>Reload</v-btn>
         </v-app-bar>
 
 
-        <v-data-table :headers="header" :items="zeilen"></v-data-table>
+        <v-data-table :headers="header" :items="zeilen">
+          <template v-slot:item.spark="{ item }">
+            <v-sparkline fill auto-draw color="#013793" :value="item.spark"></v-sparkline>
+
+
+
+
+          </template>
+        </v-data-table>
+
 
       </v-content>
     </v-app>

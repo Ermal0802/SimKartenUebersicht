@@ -12,46 +12,29 @@ var App = new Vue({
     }
   }),
   data: {
-    header: [{
-      text: "Customer",
-      value: "custom"
-    }, {
-      text: "IP",
-      value: "ip"
-    }, {
-      text: "Tel",
-      value: "isdn"
-    }, {
-      text: "Total",
-      value: "total"
-    }, {
-      text: "Datum",
-      value: "display"
-    } , {
-      text: "Start",
-      value: "start"
-    } , {
-      text: "Ende",
-      value: "ende"
-    }
-  ],
+    header: [],
     zeilen: []
   },
   methods: {
     openFile: function() {
       ipcRenderer.send('openFile', {});
     },
-    dbTest: function() {
-      ipcRenderer.send('dbTest', {});
+    Reload: function() {
+      ipcRenderer.send("Reload", {});
     }
   },
   created: function() {
 
-    ipcRenderer.on('openFile', function(event, args) {
+
+    ipcRenderer.on('newData', function(event, args) {
+      console.log(args);
+      this.header = args.header;
       this.zeilen = args.content;
-      //console.log(zeilen);
     }.bind(this));
 
+    ipcRenderer.on('openFile', function(event, args) {
+      ipcRenderer.send("Reload", {});
+    }.bind(this));
 
   }
 });
