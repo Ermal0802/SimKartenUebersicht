@@ -12,6 +12,7 @@ var App = new Vue({
     }
   }),
   data: {
+    search: '',
     header: [],
     zeilen: []
   },
@@ -36,5 +37,6 @@ var App = new Vue({
       ipcRenderer.send("Reload", {});
     }.bind(this));
 
+    ipcRenderer.send("Reload", {});
   }
 });

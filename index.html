@@ -24,18 +24,19 @@
           <v-toolbar-title>Simkarten Übersicht</v-toolbar-title>
           <v-divider class="mx-4" vertical></v-divider>
           <v-btn @click="openFile" text>Daten importieren</v-btn>
+          <v-divider class="mx-4" vertical></v-divider>
           <v-btn @click="Reload" text>Reload</v-btn>
+          <v-divider class="mx-4" vertical></v-divider>
+          <v-text-field style="max-width: 250px;" clearable v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
         </v-app-bar>
 
 
-        <v-data-table :headers="header" :items="zeilen">
+        <v-data-table :headers="header" :items="zeilen" :search="search" :footer-props="{ 'items-per-page-options': [5, 10, 15, 20, -1]}" :items-per-page="20">
+
           <template v-slot:item.spark="{ item }">
-            <v-sparkline fill auto-draw color="#013793" :value="item.spark"></v-sparkline>
-
-
-
-
+            <v-sparkline fill :smooth="16" :gradient="['#f72047', '#ffd200', '#1feaea']" :line-width="3" :value="item.spark" auto-draw></v-sparkline>
           </template>
+
         </v-data-table>
 
 

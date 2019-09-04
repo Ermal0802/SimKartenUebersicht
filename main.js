@@ -56,49 +56,13 @@ function createWindow() {
   if (process.argv.indexOf('debug') != -1) {
     win.webContents.openDevTools();
   }
+  win.setMenu(null);
+  win.maximize();
   win.loadFile('index.html');
 
 
-
   ipcMain.on('dbTest', function(event, args) {
-    /*
-        let db = new sqlite3.Database('./Database/sim_db.sqlite');
 
-        db.serialize(function() {
-
-          let cname = "LOl";
-          let CID;
-
-          db.get(
-            "SELECT (SELECT ID FROM Customs WHERE Name = ?) as ID",
-            [cname],
-            function(err, row) {
-              if (err) {
-                console.log(err);
-                return;
-              }
-
-              CID = row.ID;
-
-              db.run(
-                "INSERT OR IGNORE INTO Customs(Name,Tel,IP) VALUES(?,?,?);",
-                [cname, '321', '12343'],
-                function(err) {
-                  if (err) {
-                    console.log(err);
-                    return;
-                  }
-
-                  if (CID === null) {
-                    CID = this.lastID;
-                  }
-
-
-
-                });
-            }
-          );
-        });*/
   });
   ipcMain.on('Reload', function(event, args) {
     console.log('test1');
@@ -130,9 +94,9 @@ function createWindow() {
 
           let customers = {};
 
-          for(let cust of customersRows) {
+          for (let cust of customersRows) {
             customers[cust.ID] = cust;
-            customers[cust.ID]['spark'] = [];
+            customers[cust.ID]['spark'] = [0];
           }
 
           db.all(
@@ -144,14 +108,14 @@ function createWindow() {
                 return;
               }
 
-              for(let monat of monate) {
-                if(!(monat.Datum in header)) {
+              for (let monat of monate) {
+                if (!(monat.Datum in header)) {
                   header[monat.Datum] = {
                     text: monat.Datum,
                     value: monat.Datum
                   };
                 }
-                if(monat.CID in customers) {
+                if (monat.CID in customers) {
                   customers[monat.CID][monat.Datum] = monat.Werte;
                   customers[monat.CID]['spark'].push(monat.Werte);
                 }
@@ -282,13 +246,7 @@ function createWindow() {
                             CID = this.lastID;
                           }
 
-                          //console.log(CID);
-                          //console.log(gruppen[cname]["display"]);
-                          //console.log(gruppen[cname]["total"]);
-                          //console.log(gruppen[cname]["start"]);
-                          //console.log(gruppen[cname]["ende"]);
 
-                          //8//8//8//8//8//8//8//8//8//8//8//8//8//8//
                           db.run(
                             "INSERT OR IGNORE INTO Monate(CID,Datum,Werte,Start,Ende) VALUES(?,?,?,?,?);",
                             [
