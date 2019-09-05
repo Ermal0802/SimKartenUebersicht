@@ -12,7 +12,11 @@ const {
 const fs = require('fs');
 const csv_parse = require('csv-parse');
 const sqlite3 = require('sqlite3').verbose();
-
+const {
+  aReadFile,
+  aCsvParse,
+  aDb
+} = require('./asyncs.js');
 
 function dateDE(str) {
 
@@ -60,225 +64,225 @@ function createWindow() {
   win.maximize();
   win.loadFile('index.html');
 
-
   ipcMain.on('dbTest', function(event, args) {
 
   });
-  ipcMain.on('Reload', function(event, args) {
+
+  ipcMain.on('Reload', async function(event, args) {
     console.log('test1');
-    let db = new sqlite3.Database('./Database/sim_db.sqlite');
-    db.serialize(function() {
-      console.log("test2");
-      db.all(
-        "SELECT ID, Name, IP, Tel FROM Customs",
-        [],
-        function(err, customersRows) {
-          if (err) {
-            console.log(err);
-            return;
-          }
 
-          let header = {};
+    let db = new aDb('./Database/sim_db.sqlite');
 
-          for (let k in customersRows[0]) {
-            header[k] = {
-              text: k,
-              value: k
-            };
-          }
+    console.log("test2");
+    let customersRows;
+    try {
+      [customersRows] = await db.aAll("SELECT ID, Name, IP, Tel FROM Customs", []);
+    } catch (e) {
+      console.log(e);
+      return;
+    }
 
-          header['Spark'] = {
-            text: 'Spark',
-            value: 'spark'
-          };
+    let header = {};
 
-          let customers = {};
+    for (let k in customersRows[0]) {
+      header[k] = {
+        text: k,
+        value: k
+      };
+    }
 
-          for (let cust of customersRows) {
-            customers[cust.ID] = cust;
-            customers[cust.ID]['spark'] = [0];
-          }
+    header['Spark'] = {
+      text: 'Spark',
+      value: 'spark'
+    };
 
-          db.all(
-            "SELECT CID, Datum, Werte FROM Monate ORDER BY Start",
-            [],
-            function(err, monate) {
-              if (err) {
-                console.log(err);
-                return;
-              }
+    let customers = {};
 
-              for (let monat of monate) {
-                if (!(monat.Datum in header)) {
-                  header[monat.Datum] = {
-                    text: monat.Datum,
-                    value: monat.Datum
-                  };
-                }
-                if (monat.CID in customers) {
-                  customers[monat.CID][monat.Datum] = monat.Werte;
-                  customers[monat.CID]['spark'].push(monat.Werte);
-                }
-              }
+    for (let cust of customersRows) {
+      customers[cust.ID] = cust;
+      customers[cust.ID]['spark'] = [0];
+    }
 
-              console.log(customers);
+    let monate;
+    try {
+      [monate] = await db.aAll("SELECT CID, Datum, Werte FROM Monate ORDER BY Start", []);
+    } catch (e) {
+      console.log(e);
+      return;
+    }
 
-              win.webContents.send("newData", {
-                header: Object.values(header),
-                content: Object.values(customers)
-              });
+    for (let monat of monate) {
+      if (!(monat.Datum in header)) {
+        header[monat.Datum] = {
+          text: monat.Datum,
+          value: monat.Datum
+        };
+      }
+      if (monat.CID in customers) {
+        customers[monat.CID][monat.Datum] = monat.Werte;
+        customers[monat.CID]['spark'].push(monat.Werte);
+      }
+    }
 
-            });
-        }
-      );
+    console.log(customers);
 
+    win.webContents.send("newData", {
+      header: Object.values(header),
+      content: Object.values(customers)
     });
 
-
   });
-  //Fenster für Datei Öffnen
-  ipcMain.on('openFile', function(event, args) {
 
+
+  //Fenster für Datei Öffnen
+  ipcMain.on('openFile', async function(event, args) {
+
+    //Datei erfrgen
     var files = dialog.showOpenDialogSync(win, {
       properties: ['openFile']
     });
 
+    // checken ob datei gewählt wurde
     if (files != undefined) {
       if (files.length > 0) {
-        fs.readFile(files[0], function(err, buf) {
-          if (err) {
-            console.log(err);
-            return;
+
+        // Datei Lesen
+        let buf;
+        try {
+          buf = await aReadFile(files[0]);
+        } catch (e) {
+          console.log(e);
+          return;
+        }
+
+        //CSV Lesen/Interpretieren
+        let spalten;
+        let output;
+        try {
+          [spalten, output] = await aCsvParse(buf.toString(), {
+            trim: true,
+            skip_empty_lines: true,
+            delimiter: ";"
+          });
+        } catch (e) {
+          console.log(e);
+          return;
+        }
+
+        // CSV Daten ordnen (liste zu object) und berechnen
+        var liste = [];
+        // 'of' Werte von der liste
+        // 'in' position von der Liste
+        for (var i of output) {
+          //Erstellt für jede zahl ein Objekt.
+          var o = [];
+          for (var k in spalten) {
+            o[spalten[k]] = i[k];
+          }
+          liste.push(o);
+        }
+
+        var gruppen = {};
+
+        //berechnen
+        for (let obj of liste) {
+          if (obj["CUSTOM1"] in gruppen) {
+            gruppen[obj["CUSTOM1"]].total += parseInt(obj["TOTAL_AMOUNT"]);
+            if (gruppen[obj["CUSTOM1"]].start > dateDE(obj["USAGE_RECORD_START_TIMESTAMP"])) {
+              gruppen[obj["CUSTOM1"]].start = dateDE(obj["USAGE_RECORD_START_TIMESTAMP"]);
+              gruppen[obj["CUSTOM1"]].display = dateName(gruppen[obj["CUSTOM1"]].start);
+            }
+            if (gruppen[obj["CUSTOM1"]].ende < dateDE(obj["USAGE_RECORD_END_TIMESTAMP"])) {
+              gruppen[obj["CUSTOM1"]].ende = dateDE(obj["USAGE_RECORD_END_TIMESTAMP"]);
+            }
+          } else {
+            gruppen[obj["CUSTOM1"]] = {
+              custom: obj["CUSTOM1"],
+              isdn: obj["MSISDN"],
+              ip: obj["CALLING_IP"],
+              total: parseInt(obj["TOTAL_AMOUNT"]),
+              start: dateDE(obj["USAGE_RECORD_START_TIMESTAMP"]),
+              ende: dateDE(obj["USAGE_RECORD_END_TIMESTAMP"]),
+              display: dateName(dateDE(obj["USAGE_RECORD_START_TIMESTAMP"]))
+            };
+          }
+        }
+
+        let ObjectCount = Object.keys(gruppen).length;
+        let WorkedObjects = 0;
+        let FailedObjects = 0;
+
+        // in DB schreiben
+        let db = new aDb('./Database/sim_db.sqlite');
+
+        //für jeden customer
+        for (var cname in gruppen) {
+
+          // custommer ID abfragen
+          let CID;
+          try {
+            [{
+              CID
+            }] = await db.aGet(
+              "SELECT (SELECT ID FROM Customs WHERE Name = ?) as CID",
+              [cname]);
+          } catch (e) {
+            console.log(e);
+            FailedObjects += 1;
+            continue;
           }
 
-          var output = [];
+          // custommer einfügen oder auch nicht
+          let lastID;
+          try {
+            [{
+              lastID
+            }] = await db.aRun(
+              "INSERT OR IGNORE INTO Customs(Name,Tel,IP) VALUES(?,?,?);",
+              [
+                cname,
+                gruppen[cname]["isdn"],
+                gruppen[cname]["ip"]
+              ]);
+          } catch (e) {
+            console.log(e);
+            FailedObjects += 1;
+            continue;
+          }
 
-          csv_parse(buf.toString(), {
-              trim: true,
-              skip_empty_lines: true,
-              delimiter: ";"
-            })
-            .on('readable', function() {
+          //echte customer ID ermitteln
+          if (CID === null) {
+            CID = lastID;
+          }
 
-              let spalten = null;
-              let zeile;
-              while (zeile = this.read()) {
-                if (!spalten) {
-                  spalten = zeile;
-                } else {
-                  output.push(zeile);
-                }
-              }
+          //Monat einfügen
+          try {
+            await db.aRun(
+              "INSERT OR IGNORE INTO Monate(CID,Datum,Werte,Start,Ende) VALUES(?,?,?,?,?);",
+              [
+                CID,
+                gruppen[cname]["display"],
+                gruppen[cname]["total"],
+                gruppen[cname]["start"],
+                gruppen[cname]["ende"]
+              ]);
+          } catch (e) {
+            console.log(e);
+            FailedObjects += 1;
+            continue;
+          }
 
-              var liste = [];
-              // 'of' Werte von der liste
-              // 'in' position von der Liste
-              for (var i of output) {
-                //Erstellt für jede zahl ein Objekt.
-                var o = [];
-                for (var k in spalten) {
-                  o[spalten[k]] = i[k];
-                }
-                liste.push(o);
-              }
+          // ein object ist fertig
+          WorkedObjects += 1;
 
-              var gruppen = {};
-
-              for (let obj of liste) {
-                if (obj["CUSTOM1"] in gruppen) {
-                  gruppen[obj["CUSTOM1"]].total += parseInt(obj["TOTAL_AMOUNT"]);
-                  if (gruppen[obj["CUSTOM1"]].start > dateDE(obj["USAGE_RECORD_START_TIMESTAMP"])) {
-                    gruppen[obj["CUSTOM1"]].start = dateDE(obj["USAGE_RECORD_START_TIMESTAMP"]);
-                    gruppen[obj["CUSTOM1"]].display = dateName(gruppen[obj["CUSTOM1"]].start);
-                  }
-                  if (gruppen[obj["CUSTOM1"]].ende < dateDE(obj["USAGE_RECORD_END_TIMESTAMP"])) {
-                    gruppen[obj["CUSTOM1"]].ende = dateDE(obj["USAGE_RECORD_END_TIMESTAMP"]);
-                  }
-                } else {
-                  gruppen[obj["CUSTOM1"]] = {
-                    custom: obj["CUSTOM1"],
-                    isdn: obj["MSISDN"],
-                    ip: obj["CALLING_IP"],
-                    total: parseInt(obj["TOTAL_AMOUNT"]),
-                    start: dateDE(obj["USAGE_RECORD_START_TIMESTAMP"]),
-                    ende: dateDE(obj["USAGE_RECORD_END_TIMESTAMP"]),
-                    display: dateName(dateDE(obj["USAGE_RECORD_START_TIMESTAMP"]))
-                  };
-                }
-              }
-
-              let ObjectCount = Object.keys(gruppen).length;
-              let WorkedObjects = 0;
-              let FailedObjects = 0;
-
-
-              let db = new sqlite3.Database('./Database/sim_db.sqlite');
-              db.serialize(function() {
-                for (var name in gruppen) {
-
-                  db.get(
-                    "SELECT (SELECT ID FROM Customs WHERE Name = ?) as ID",
-                    [name],
-                    function(cname, err, row) {
-                      if (err) {
-                        console.log(err);
-                        FailedObjects += 1;
-                        return;
-                      }
-
-                      let CID = row.ID;
-
-                      db.run(
-                        "INSERT OR IGNORE INTO Customs(Name,Tel,IP) VALUES(?,?,?);",
-                        [
-                          cname,
-                          gruppen[cname]["isdn"],
-                          gruppen[cname]["ip"]
-                        ],
-                        function(err) {
-                          if (err) {
-                            console.log(err);
-                            FailedObjects += 1;
-                            return;
-                          }
-
-                          if (CID === null) {
-                            CID = this.lastID;
-                          }
-
-
-                          db.run(
-                            "INSERT OR IGNORE INTO Monate(CID,Datum,Werte,Start,Ende) VALUES(?,?,?,?,?);",
-                            [
-                              CID,
-                              gruppen[cname]["display"],
-                              gruppen[cname]["total"],
-                              gruppen[cname]["start"],
-                              gruppen[cname]["ende"]
-                            ],
-                            function(err) {
-                              if (err) {
-                                console.log(err);
-                                FailedObjects += 1;
-                                return;
-                              }
-
-                              WorkedObjects += 1;
-
-                              if ((FailedObjects + WorkedObjects) == ObjectCount) {
-                                win.webContents.send("openFile", {});
-                              }
-                            }
-                          );
-                        });
-                    }.bind(null, name)
-                  );
-                }
-              });
-            });
-        });
+          //Wenn alle Objecte fertig sind reload in webseite auslösen
+          if ((FailedObjects + WorkedObjects) == ObjectCount) {
+            win.webContents.send("openFile", {});
+          }
+        }
       }
     }
   });
 }
+
 app.on('ready', createWindow);
