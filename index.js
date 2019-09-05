@@ -33,7 +33,6 @@ var App = new Vue({
     ipcRenderer.on('newData', function(event, args) {
       this.loadingFiles = false;
       this.loadingDB = false;
-      console.log(args);
       this.header = args.header;
       this.zeilen = args.content;
     }.bind(this));

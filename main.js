@@ -69,11 +69,11 @@ function createWindow() {
   });
 
   ipcMain.on('Reload', async function(event, args) {
-    console.log('test1');
+
 
     let db = new aDb('./Database/sim_db.sqlite');
 
-    console.log("test2");
+
     let customersRows;
     try {
       [customersRows] = await db.aAll("SELECT ID, Name, IP, Tel FROM Customs", []);
@@ -124,7 +124,7 @@ function createWindow() {
       }
     }
 
-    console.log(customers);
+
 
     win.webContents.send("newData", {
       header: Object.values(header),

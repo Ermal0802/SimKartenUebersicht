@@ -1,5 +1,0 @@
-Essen;Essen2;Name;Name2;NochmalEssen;
-Döner;kebab;lolking;Ermal;Dönnerkebab;
-King;Olli;;YOli;Gang;
-Döner;kebab;lolking;Ermal;Dönnerkebab;
-King;Olli;;YOli;Gang;

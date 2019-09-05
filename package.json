@@ -6,7 +6,13 @@
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "electron .",
-    "test": "electron . debug"
+    "test": "electron . debug",
+    "dist": "electron-builder ."
+  },
+  "build": {
+    "appId": "com.github.ermal0802.sim-karten-uebersicht",
+    "productName": "Sim Karten Übersicht",
+    "extraFiles": ["Database/sim_db.sqlite"]
   },
   "keywords": [
     "Sim",
