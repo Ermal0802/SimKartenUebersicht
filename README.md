@@ -7,7 +7,7 @@
 - npm.
 - Nodejs.
 
-## Befehele
+## Befehle
 
 ```sh
 npm istall
