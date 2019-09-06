@@ -1,18 +1,35 @@
-# Sim Karten Übersicht
+# Sim card view
 
-## Was macht das Programm?
-- Dieses Programm erzeugt eine Übersicht von mehreren CSV-Dateien mit Daten des monatlichen Verbrauchs.
+![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD_itQ54sOwKCIMDvuvvNG-dZJWyyaLKFMRx_nTac4k9fXKAdKfQ)
 
-## Was braucht man?
-- npm.
-- Nodejs.
+------------
 
-## Befehle
 
-```sh
-npm istall
+#### What does the program do?
+
+This program generates an overview of several CSV files with monthly consumption data.
+
+
+------------
+
+#### Build
+1. run in powershell
+`npm i electron-builder`
+
+1.  put in  **package.json** 
 ```
-
-```sh
-npm start
+"build": {
+    "appId": "com.github.ermal0802.sim-karten-uebersicht",
+    "productName": "Sim card view",
+    "extraFiles": ["Database/sim_db.sqlite"]
+  },
 ```
+1. and in **"scripts"** 
+```
+"dist": "electron-builder ."
+```
+1. after that run in powershell
+`npm run dist`
+1. go to the **dist** folder
+
+1. start **Sim card view setup 1.0.0 .exe**
