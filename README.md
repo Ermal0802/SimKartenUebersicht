@@ -1,11 +1,16 @@
 # Sim card view
 
-![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD_itQ54sOwKCIMDvuvvNG-dZJWyyaLKFMRx_nTac4k9fXKAdKfQ)
+![](https://raw.githubusercontent.com/Ermal0802/SimKartenUebersicht/master/Screenshots/SimViewShot.png)
 
 
 ## Description
 
-This program generates an overview of several CSV files with monthly consumption data.
+The program shows the data usage from several sim cards.
+It imports CSV data in a database. 
+The program stores the data in the database.
+It calculates the monthly total per sim card.
+All sim cards are displayed in tabular form.
+Sparkline helps control the data usage.
 
 ## Dependencies
 
