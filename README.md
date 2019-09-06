@@ -1,6 +1,6 @@
 # Sim card view
 
-![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD_itQ54sOwKCIMDvuvvNG-dZJWyyaLKFMRx_nTac4k9fXKAdKfQ)
+![](https://raw.githubusercontent.com/Ermal0802/SimKartenUebersicht/master/Screenshots/SimViewShot.png)
 
 
 ## Description
