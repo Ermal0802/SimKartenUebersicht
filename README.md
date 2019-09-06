@@ -23,7 +23,7 @@ after that you'll find the packed executables inside the "dist" directory.
 
 ### Windows
 
-After [building]() the application navigate into the "dist" directory and execute the Setup file.
+After [building](#build) the application navigate into the "dist" directory and execute the Setup file.
 
 ## Run from Sources
 
