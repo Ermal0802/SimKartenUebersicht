@@ -4,7 +4,6 @@
 - Dieses Programm erzeugt eine Übersicht von mehreren CSV-Dateien mit Daten des monatlichen Verbrauchs.
 
 ## Was braucht man?
-
 - npm.
 - Nodejs.
 
@@ -14,3 +13,6 @@
 npm istall
 ```
 
+```sh
+npm start
+```
