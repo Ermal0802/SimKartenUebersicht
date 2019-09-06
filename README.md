@@ -20,8 +20,6 @@ Sparkline helps control the data usage.
 
 ## Build
 
-test
-
 To build the Application please run the following two commands:
 
 1. run in terminal
