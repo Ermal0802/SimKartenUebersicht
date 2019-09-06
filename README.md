@@ -7,6 +7,12 @@
 
 This program generates an overview of several CSV files with monthly consumption data.
 
+## Dependencies
+
+1. [npm](https://www.npmjs.com/get-npm)
+
+1. [Nodejs](https://nodejs.org/en/download/)
+
 ## Build
 
 To build the Application please run the following two commands:
