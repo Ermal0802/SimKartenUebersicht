@@ -10,7 +10,7 @@
 
 ## Befehele
 
-´´´sh
+```sh
 npm istall
-´´´
+```
 
