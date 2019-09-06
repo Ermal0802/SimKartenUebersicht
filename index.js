@@ -16,7 +16,8 @@ var App = new Vue({
     loadingFiles: false,
     search: '',
     header: [],
-    zeilen: []
+    zeilen: [],
+    selected: []
   },
   methods: {
     openFile: function() {
@@ -26,9 +27,18 @@ var App = new Vue({
     Reload: function() {
       this.loadingDB = true;
       ipcRenderer.send("Reload", {});
+    },
+    Delete: function() {
+      //console.log(this.selected[0].ID);
+      //??????????????
+      ipcRenderer.send("Delete", {ID:this.selected[0].ID});
     }
   },
   created: function() {
+    ipcRenderer.on('Delete', function(event, args) {
+      //?????????????
+      ipcRenderer.send("Delete", {});
+    }.bind(this));
 
     ipcRenderer.on('newData', function(event, args) {
       this.loadingFiles = false;

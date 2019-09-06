@@ -44,6 +44,9 @@ function dateName(d) {
   return tag;
 }
 
+function displayData(num) {
+  return (Math.round(num / 102.4) / 10) + ' Mb';
+}
 
 
 function createWindow() {
@@ -64,14 +67,24 @@ function createWindow() {
   win.maximize();
   win.loadFile('index.html');
 
-  ipcMain.on('dbTest', function(event, args) {
-
+  ipcMain.on('Delete', async function(event, args) {
+    let db = new aDb('./Database/sim_db.sqlite');
+    try {
+      await db.aRun("DELETE FROM Monate WHERE CID = ?", [args.ID]);
+      await db.aRun("DELETE FROM Customs WHERE ID = ?", [args.ID]);
+    } catch (e) {
+      console.log(e);
+    }
+    win.webContents.send("openFile", {});
   });
 
   ipcMain.on('Reload', async function(event, args) {
 
 
     let db = new aDb('./Database/sim_db.sqlite');
+
+    let clear;
+
 
 
     let customersRows;
@@ -119,7 +132,7 @@ function createWindow() {
         };
       }
       if (monat.CID in customers) {
-        customers[monat.CID][monat.Datum] = monat.Werte;
+        customers[monat.CID][monat.Datum] = displayData(monat.Werte);
         customers[monat.CID]['spark'].push(monat.Werte);
       }
     }
