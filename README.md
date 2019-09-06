@@ -6,10 +6,15 @@
 ## Description
 
 The program shows the data usage from several sim cards.
+
 It imports CSV data in a database. 
+
 The program stores the data in the database.
+
 It calculates the monthly total per sim card.
+
 All sim cards are displayed in tabular form.
+
 Sparkline helps control the data usage.
 
 ## Dependencies
