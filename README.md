@@ -7,11 +7,12 @@
 
 This program generates an overview of several CSV files with monthly consumption data.
 
-**Table of Contents**
-
-[TOCM]
-
-[TOC]
+##### Table of Contents  
+[Headers](#headers)  
+[Emphasis](#emphasis)  
+...snip...    
+<a name="headers"/>
+## Headers
 
 ## Build
 
